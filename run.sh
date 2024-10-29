@@ -12,5 +12,5 @@ python3 stats_analysis.py
 # Wait for 2 seconds before proceeding to the next script
 sleep 2
 
-# Execute model.py
-python model.py
+# Execute classical ML in classical_model.py
+python classical_model.py
