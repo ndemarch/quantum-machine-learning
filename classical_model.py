@@ -93,11 +93,11 @@ def print_summary(fit):
 
 
 def model(X):
-  pass
+    pass
 
 
 def predict(model, y):
-  pass
+    pass
     
 
 def confusion_plot(y, y_pred, name = None):
