@@ -115,8 +115,8 @@ def create_binary_col(df):
 
 if __name__ in "__main__":
     # run our preprocessing steps
-    d1_path = "./data/Barchi19_Morphology_Catalog.csv"
-    d2_path = "./data/GalaxyZoo1_DR_table2.csv"
+    d1_path = "../data/Barchi19_Morphology_Catalog.csv"
+    d2_path = "../data/GalaxyZoo1_DR_table2.csv"
     col1, col2 = "dr7objid", "OBJID"
 
     d1_filtered, d2_filtered = match_and_remove_duplicates(d1_path, d2_path, col1, col2)
@@ -124,4 +124,4 @@ if __name__ in "__main__":
     merged_df = merge_and_filter_uncertain(d1_final, d2_final)
     df = create_binary_col(merged_df)
 
-    df.to_csv("./data/processed_morphology_dataset.csv", index=False)
+    df.to_csv("../data/processed_morphology_dataset.csv", index=False)
