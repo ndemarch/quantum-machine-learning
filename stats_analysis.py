@@ -99,7 +99,7 @@ def standardize(X):
 
 if __name__ in "__main__":
     # load processed data
-    df = pd.read_csv("./data/processed_morphology_dataset.csv")
+    df = pd.read_csv("../data/processed_morphology_dataset.csv")
     X_org = df.drop(columns = ["morphological_type","dr7objid"])
     X_org = standardize(X_org)
     distributions_and_correlations(X_org, name = "_original")
@@ -118,4 +118,4 @@ if __name__ in "__main__":
     X_new = standardize(X_new)
     distributions_and_correlations(X_new, name = "_model2")
     # save feature engineered data
-    X_new.to_csv("./data/subsampled_engineered_features.csv", index=False)
+    X_new.to_csv("../data/subsampled_engineered_features.csv", index=False)
