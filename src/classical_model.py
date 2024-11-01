@@ -75,9 +75,14 @@ def plot_iteration_accuracy(y_true, y_pred):
     Returns:
     None
     """
-    predictions = []
-    for pred in y_pred:
-        predictions.append(calculate_accuracy(y_true, pred))
+    if y_pred.ndim == 1:
+        # single model iteration
+        predictions = calculate_accuracy(y_true, y_pred)
+    else:
+        #multi-prediction 
+        predictions = []
+        for pred in y_pred:
+            predictions.append(calculate_accuracy(y_true, pred))
     plt.figure(figsize=(16, 8))
     plt.plot(range(0, 2500), predictions, 'g-', alpha=0.6)
     plt.xticks(fontsize=20)
