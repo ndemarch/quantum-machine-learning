@@ -114,9 +114,9 @@ def confusion_plot(y, y_pred, name = None):
 
 if __name__ in "__main__":
     # load processed data
-    X = pd.read_csv("./data/subsampled_data_features.csv")
+    X = pd.read_csv("../data/subsampled_data_features.csv")
     #X_new = pd.read_csv("./data/subsampled_engineered_features.csv")
-    y = pd.read_csv("./data/subsampled_data_labels.csv")
+    y = pd.read_csv("../data/subsampled_data_labels.csv")
     y = y['morphological_type']
     # train/test split
     X_train, X_test, y_train, y_test = custom_train_test_split(X, y, test_size=0.2, random_state=42)
