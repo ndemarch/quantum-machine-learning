@@ -125,3 +125,4 @@ if __name__ in "__main__":
     df = create_binary_col(merged_df)
 
     df.to_csv("../data/processed_morphology_dataset.csv", index=False)
+    print("Successfully preprocessed the dataset!")

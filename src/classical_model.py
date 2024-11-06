@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
-import pystan
 import warnings
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import r2_score
 from sklearn.metrics import confusion_matrix
 warnings.filterwarnings("ignore")
@@ -97,8 +97,11 @@ def print_summary(fit):
     pass
 
 
-def model(X):
-    pass
+def model(X, y):
+    lr = LogisticRegression()
+    lr.fit(X, y)
+    return lr
+    
 
 
 def predict(model, y):
@@ -125,4 +128,14 @@ if __name__ in "__main__":
     y = y['morphological_type']
     # train/test split
     X_train, X_test, y_train, y_test = custom_train_test_split(X, y, test_size=0.2, random_state=42)
+    # train model
+    model = model(X_train, y_train)
+    # predict   
+    y_pred = model.predict(X_test)
+    # calculate accuracy
+    accuracy = calculate_accuracy(y_test, y_pred)
+    print("Classification accuracy: ", accuracy)
+    # confusion matrix
+    confusion_plot(y_test, y_pred, name = "logistic_regression")
+
     
