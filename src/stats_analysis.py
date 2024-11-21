@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -77,7 +77,7 @@ def feature_engineer(X):
     Returns:
     DataFrame: Feature-engineered dataframe.
     """
-    X.drop(columns=['S', 'G2', 'K', 'A'], inplace=True)
+    X.drop(columns=['G2', 'S'], inplace=True)
     return X
 
 def standardize(X):
@@ -102,8 +102,9 @@ if __name__ in "__main__":
     df = pd.read_csv("../data/processed_morphology_dataset.csv")
     X_org = df.drop(columns = ["morphological_type","dr7objid"])
     X_org = standardize(X_org)
-    distributions_and_correlations(X_org, name = "_original")
-    subsampled_df = stratified_subsample(df, "morphological_type", 50000, random_state=42)
+    distributions_and_correlations(X_org, name = "_all_features")
+    print(f"Original data shape: {X_org.shape}")
+    subsampled_df = stratified_subsample(df, "morphological_type", 200000, random_state=42)
     # split features and label
     y = subsampled_df["morphological_type"]
     X = subsampled_df.drop(columns = ["morphological_type","dr7objid"])
@@ -112,10 +113,9 @@ if __name__ in "__main__":
     X.to_csv("../data/subsampled_data_features.csv", index=False)
     y.to_csv("../data/subsampled_data_labels.csv", index=False)
     # get distributions
-    distributions_and_correlations(X, name = "_model1")
     # feature engineer
     X_new = feature_engineer(X)
     X_new = standardize(X_new)
-    distributions_and_correlations(X_new, name = "_model2")
+    #distributions_and_correlations(X_new, name = "_model2")
     # save feature engineered data
     X_new.to_csv("../data/subsampled_engineered_features.csv", index=False)

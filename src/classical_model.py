@@ -4,8 +4,10 @@ import warnings
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import r2_score
-from sklearn.metrics import confusion_matrix
+from sklearn.svm import SVC, LinearSVC
+from sklearn.metrics import confusion_matrix, classification_report
+from stats_analysis import stratified_subsample
+import time
 warnings.filterwarnings("ignore")
 
 def custom_train_test_split(X, y, test_size=0.2, random_state=None):
@@ -97,17 +99,19 @@ def print_summary(fit):
     pass
 
 
-def model(X, y):
+def logreg_model(X, y):
     lr = LogisticRegression()
     lr.fit(X, y)
     return lr
+
+def svm_model(X, y, kernel = 'linear'):
+    if kernel == 'linear':
+        svm = LinearSVC(dual=False)
+    else:
+        svm = SVC(kernel=kernel, n_jobs=-1)
+    svm.fit(X, y)
+    return svm
     
-
-
-def predict(model, y):
-    pass
-    
-
 def confusion_plot(y, y_pred, name = None):
     cm = confusion_matrix(y, y_pred)
     # plot confusion matrix
@@ -116,7 +120,19 @@ def confusion_plot(y, y_pred, name = None):
     plt.xlabel('Predicted Labels')
     plt.ylabel('True Labels')
     plt.title('Confusion Matrix')
-    plt.savefig("confusion_matrix_"+str(name)+".pdf", dpi=1200)
+    plt.savefig("./plots/confusion_matrix_"+str(name)+".pdf", dpi=1200)
+    plt.close()
+
+def time_vs_size_plot(lr_times, svm_times, sizes):
+    plt.figure(figsize=(12, 8))
+    plt.plot(sizes, lr_times, 'g-', alpha=0.6, label="Logistic Regression")
+    plt.plot(sizes, svm_times, 'r--', alpha=0.6, label="SVM")
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=15)
+    plt.xlabel("Subsample Size N", fontsize=25)
+    plt.ylabel("Time (seconds)", fontsize=20)
+    plt.legend(fontsize=15)
+    plt.savefig("./plots/time_vs_size_classical.pdf", dpi=1200)
     plt.close()
 
 
@@ -129,13 +145,53 @@ if __name__ in "__main__":
     # train/test split
     X_train, X_test, y_train, y_test = custom_train_test_split(X, y, test_size=0.2, random_state=42)
     # train model
-    model = model(X_train, y_train)
+    lr = logreg_model(X_train, y_train)
+    train_accuracy = lr.score(X_train, y_train)
+    print("Log Reg classification accuracy on training set: ", train_accuracy)
     # predict   
-    y_pred = model.predict(X_test)
+    y_pred = lr.predict(X_test)
     # calculate accuracy
     accuracy = calculate_accuracy(y_test, y_pred)
-    print("Classification accuracy: ", accuracy)
+    print("Log Reg classification accuracy on test set: ", accuracy)
     # confusion matrix
     confusion_plot(y_test, y_pred, name = "logistic_regression")
+    print(classification_report(y_test, y_pred))
+
+    # for svm now
+    svm = svm_model(X_train, y_train)
+    train_accuracy = svm.score(X_train, y_train)
+    print("SVM classification accuracy on training set: ", train_accuracy)
+    # predict
+    y_pred = svm.predict(X_test)
+    # calculate accuracy
+    accuracy = calculate_accuracy(y_test, y_pred)
+    print("SVM classification accuracy on test set: ", accuracy)
+    # confusion matrix
+    confusion_plot(y_test, y_pred, name = "svm")
+    print(classification_report(y_test, y_pred))
+
+    # various subsample sizes
+    sizes = [1000,2000,5000,10000,15000,20000,30000,50000,80000,100000,120000,150000,180000,200000]
+    lr_times, svm_times = [], []
+    # Combine X and y into a single DataFrame
+    df = pd.concat([X, y], axis=1)
+    #
+    for size in sizes:
+        subsampled_df = stratified_subsample(df, "morphological_type", size, random_state=42)
+        y = subsampled_df["morphological_type"]
+        X = subsampled_df.drop(columns = ["morphological_type"])
+        # train/test split
+        X_train, X_test, y_train, y_test = custom_train_test_split(X, y, test_size=0.2, random_state=42)
+        # train model
+        t1 = time.time()
+        lr = logreg_model(X_train, y_train)
+        t2 = time.time()
+        lr_times.append(t2-t1)
+        t3 = time.time()
+        svm = svm_model(X_train, y_train)
+        t4 = time.time()
+        svm_times.append(t4-t3)
+    time_vs_size_plot(lr_times=lr_times, svm_times=svm_times, sizes=sizes)
+     
 
     
