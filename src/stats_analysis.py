@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import warnings
 warnings.filterwarnings("ignore")
 
-def stratified_subsample(df, class_label, total_samples, random_state=None):
+def stratified_subsample(df, class_label, total_samples, replace = False, random_state=None):
     """
     Subsamples a dataframe in a stratified manner based on a specified class label.
 
@@ -34,8 +34,8 @@ def stratified_subsample(df, class_label, total_samples, random_state=None):
     class_0_data = df[df[class_label] == 0]
     class_1_data = df[df[class_label] == 1]
 
-    class_0_sampled = class_0_data.sample(n=class_0_samples, replace=True)
-    class_1_sampled = class_1_data.sample(n=class_1_samples, replace=True)
+    class_0_sampled = class_0_data.sample(n=class_0_samples, replace=replace)
+    class_1_sampled = class_1_data.sample(n=class_1_samples, replace=replace)
 
     subsampled_df = pd.concat([class_0_sampled, class_1_sampled])
     final_subsampled_df = subsampled_df.sample(frac=1).reset_index(drop=True)
@@ -77,7 +77,8 @@ def feature_engineer(X):
     Returns:
     DataFrame: Feature-engineered dataframe.
     """
-    X.drop(columns=['G2', 'S'], inplace=True)
+    X['G2H'] = X['G2'] * X['H']
+    X.drop(columns=['K'], inplace=True)
     return X
 
 def standardize(X):
@@ -90,10 +91,9 @@ def standardize(X):
     Returns:
     DataFrame: Standardized features dataframe.
     """
-    scaler = StandardScaler()
-    scaler.fit(X)
-    X_standardized = scaler.transform(X)
-
+    #scaler = StandardScaler()
+    scaler = MinMaxScaler()
+    X_standardized = scaler.fit_transform(X)
     return pd.DataFrame(X_standardized, columns=X.columns)
 
 
@@ -101,21 +101,23 @@ if __name__ in "__main__":
     # load processed data
     df = pd.read_csv("../data/processed_morphology_dataset.csv")
     X_org = df.drop(columns = ["morphological_type","dr7objid"])
-    X_org = standardize(X_org)
+    #X_org = standardize(X_org)
     distributions_and_correlations(X_org, name = "_all_features")
     print(f"Original data shape: {X_org.shape}")
-    subsampled_df = stratified_subsample(df, "morphological_type", 200000, random_state=42)
+    subsampled_df = stratified_subsample(df, "morphological_type", 50000, random_state=42)
+    X_sub = subsampled_df.drop(columns = ["morphological_type","dr7objid"])
+    X_sub = standardize(X_sub)
+    distributions_and_correlations(X_sub, name = "_subsampled_features")
     # split features and label
-    y = subsampled_df["morphological_type"]
-    X = subsampled_df.drop(columns = ["morphological_type","dr7objid"])
+    y = df["morphological_type"]
+    X = df.drop(columns = ["morphological_type","dr7objid"])
     X = standardize(X)
     # save data for reproducability
-    X.to_csv("../data/subsampled_data_features.csv", index=False)
-    y.to_csv("../data/subsampled_data_labels.csv", index=False)
+    X.to_csv("../data/data_features.csv", index=False)
+    y.to_csv("../data/data_labels.csv", index=False)
     # get distributions
     # feature engineer
     X_new = feature_engineer(X)
-    X_new = standardize(X_new)
     #distributions_and_correlations(X_new, name = "_model2")
     # save feature engineered data
-    X_new.to_csv("../data/subsampled_engineered_features.csv", index=False)
+    X_new.to_csv("../data/engineered_features.csv", index=False)
