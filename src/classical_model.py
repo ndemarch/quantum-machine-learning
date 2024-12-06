@@ -124,14 +124,14 @@ def time_vs_size_plot(lr_times, svm_times, sizes, qsvm_times=None, qlr_times=Non
     plt.semilogy(sizes, svm_times, 'r-', alpha=0.6, label="SVM")
     if qsvm_times is not None and qlr_times is not None:
         l = len(q_sizes)
-        # Interpolate quantum times to match classical sizes
-        qlr_interp = interp1d(q_sizes, qlr_times, kind='linear', fill_value="extrapolate")
-        qsvm_interp = interp1d(q_sizes, qsvm_times, kind='linear', fill_value="extrapolate")
-        # Interpolated times for size 200000
+        # Extrapolate quantum times to match classical sizes
+        qlr_extr = interp1d(q_sizes, qlr_times, kind='linear', fill_value="extrapolate")
+        qsvm_extr = interp1d(q_sizes, qsvm_times, kind='linear', fill_value="extrapolate")
+        # Extrapolated times for size 5000 to 200000
         for s in np.linspace(5000, 200000, 10):
             q_sizes.append(s)
-            qlr_times.append(qlr_interp(s))
-            qsvm_times.append(qsvm_interp(s))
+            qlr_times.append(qlr_extr(s))
+            qsvm_times.append(qsvm_extr(s))
         plt.semilogy(q_sizes[:l], qlr_times[:l], 'b^-', alpha=0.6, label="Quantum Logistic Regression")
         plt.semilogy(q_sizes[:l], qsvm_times[:l], 'C1x-', alpha=0.6, label="Quantum SVM")
         plt.semilogy(q_sizes[l:], qlr_times[l:], 'b--', alpha=0.6)

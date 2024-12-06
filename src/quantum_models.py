@@ -220,24 +220,16 @@ def time_vs_size_plot(times, sizes, name = None):
 if __name__ == "__main__":
     quantum_kernel, X, y = load_data()
 
-    y_train, y_train_pred, y_test, y_pred = local_qsvm(quantum_kernel, X, y, size = 200, optimize_params=False)
-    y_train_pred = pd.Series(y_train_pred)
-    y_pred = pd.Series(y_pred)
-    y_train = pd.concat([y_train] * 10, ignore_index=True)
-    y_train_pred = pd.concat([y_train_pred] * 10, ignore_index=True)
+    y_train, y_train_pred, y_test, y_pred = local_qsvm(quantum_kernel, X, y, size = 2000, optimize_params=False)
     confusion_plot(y_train, y_train_pred, cmap = 'Greens', name = "qsvm_local")
     print(classification_report(y_train, y_train_pred))
 
 
-    y_train, y_train_pred, y_test, y_pred = local_qlr(X, y, size = 200)
-    y_train_pred = pd.Series(y_train_pred)
-    y_pred = pd.Series(y_pred)
-    y_train = pd.concat([y_train] * 10, ignore_index=True)
-    y_train_pred = pd.concat([y_train_pred] * 10, ignore_index=True)
+    y_train, y_train_pred, y_test, y_pred = local_qlr(X, y, size = 2000)
     confusion_plot(y_train, y_train_pred, name = "qlr_local")
     print(classification_report(y_train, y_train_pred))
 
     backend = set_up_backend()
-    y_test, y_pred = run_single_session_qsvm(quantum_kernel, X, y, 200, backend)
+    y_test, y_pred = run_single_session_qsvm(quantum_kernel, X, y, 2000, backend)
     confusion_plot(y_test, y_pred, name = "qsvm")
     print(classification_report(y_test, y_pred))
