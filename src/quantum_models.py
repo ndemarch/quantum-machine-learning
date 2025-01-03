@@ -29,7 +29,7 @@ from quantum_logistic_regression import train_quantum_logistic_regression, sigmo
 def set_up_backend():
     service = QiskitRuntimeService(
     channel="ibm_quantum", 
-    token="6207c6bd837ec1f058247abf4bfa048ee64f005d88632388a189c359e46d19f6f8e43b187739698f67eb288ddedf329a38530286553a156bcf9fc9a0ee764747"
+    token="<enter-ibm-token>"
     )
     backends = service.backends()
     # find the backend with the fewest pending jobs
