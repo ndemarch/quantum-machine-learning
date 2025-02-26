@@ -28,7 +28,7 @@ from quantum_models import load_data
 from stats_analysis import stratified_subsample
 
 
-# Quantum linear regressor
+# QLR
 def quantum_linear_model(params, x, save_circuit=False):
     """
     Creates a quantum circuit that models a linear function.
@@ -39,44 +39,33 @@ def quantum_linear_model(params, x, save_circuit=False):
     """
     num_qubits = len(x)
     qc = QuantumCircuit(num_qubits)
-    
-    # Encode the data into the quantum circuit (feature encoding)
     for i in range(num_qubits):
         qc.rx(x[i], i)
-    
-    # Apply parameterized rotations
     idx = 0
     for i in range(num_qubits):
         qc.ry(params[idx], i)
         idx += 1
-    
-    # Apply entanglement
     for i in range(num_qubits - 1):
         qc.cz(i, i + 1)
     
     qc.measure_all()
-    
-    # Draw and save the circuit
+    # draw
     if save_circuit:
         fig, ax = plt.subplots(figsize=(12, 6))
         qc.draw(output='mpl', ax=ax)
         plt.savefig("./plots/quantum_circuit_with_sigmoid.pdf", bbox_inches='tight')
         plt.close(fig)
     
-    # Simulate the circuit
     backend = Aer.get_backend('statevector_simulator')
     qc = transpile(qc, backend)
     result = backend.run(qc).result()
     statevector = result.get_statevector(qc)
-    
-    # Return the real part of the expected output as the linear model's prediction
     return np.real(statevector[0])
 
-# Sigmoid function
 def sigmoid(z):
     return expit(z)
 
-# Loss function (Cross-Entropy Loss)
+# cross entropy
 def logistic_loss(params, X, y):
     """
     Computes the logistic loss (cross-entropy) for quantum logistic regression.
@@ -92,7 +81,6 @@ def logistic_loss(params, X, y):
     loss = log_loss(y, predictions)
     return loss
 
-# Training quantum logistic regression using gradient descent
 def train_quantum_logistic_regression(X, y, num_params):
     """
     Train the Quantum Logistic Regression model using gradient-based optimization.
@@ -105,7 +93,6 @@ def train_quantum_logistic_regression(X, y, num_params):
     result = minimize(logistic_loss, initial_params, args=(X, y), method='BFGS', options={'maxiter': 200})
     return result.x  # optimized parameters
 
-# Example usage
 if __name__ == "__main__":
     # Example data
     X = np.random.rand(10, 6)  # 10 samples, 2 features
