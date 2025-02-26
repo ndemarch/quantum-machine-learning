@@ -58,7 +58,6 @@ def quantum_linear_model(params, x):
 def sigmoid(z):
     return expit(z)
 
-# loss function (Cross-Entropy Loss)
 def logistic_loss(params, X, y):
     """
     Computes the logistic loss (cross-entropy) for quantum logistic regression.
@@ -75,7 +74,7 @@ def logistic_loss(params, X, y):
     loss = log_loss(y, predictions)
     return loss
 
-# rraining quantum logistic regression using grad descent
+# training quantum logistic regression using grad descent
 def train_quantum_logistic_regression(X, y, num_params):
     """
     Train the Quantum Logistic Regression model using gradient-based optimization.
@@ -90,14 +89,12 @@ def train_quantum_logistic_regression(X, y, num_params):
     result = minimize(logistic_loss, initial_params, args=(X, y), method='BFGS', options={'maxiter': 200})
     return result.x  # optimized parameters
 
-# Train Quantum Logistic Regression with a Quantum Kernel
+# Additional model: train QLR with quantum kernel
 def quantum_logistic_regression(X, y, test_size=0.2):
     # doing the daata preprocessing here
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
     X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=test_size, random_state=42)
-    
-    # Define quantum feature map
     num_qubits = X_train.shape[1]
     feature_map = ZZFeatureMap(feature_dimension=num_qubits, reps=2, entanglement='linear')
     quantum_kernel = FidelityQuantumKernel(feature_map=feature_map)
