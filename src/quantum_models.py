@@ -68,7 +68,7 @@ def load_data():
 def run_multple_sessions_qsvm(quantum_kernel, X, y, backend):
     sizes = [1000,5000,10000,20000]
     times = []
-    # Combine X and y into a single DataFrame
+    # combine X and y into a single DataFrame
     df = pd.concat([X, y], axis=1)
     #
     session = Session(backend=backend)
@@ -131,7 +131,7 @@ def local_qsvm(quantum_kernel, X, y, size = 100, optimize_params = False):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     qsvc = QSVC(quantum_kernel=quantum_kernel)
     if optimize_params:
-        # Perform GridSearch for hyperparameter tuning
+        # perform GridSearch for hyperparameter tuning
         param_grid = {"C": [0.01, 1, 10], "gamma": [0.01, 0.1, 1]}
         cv = StratifiedKFold(n_splits=2, shuffle=True, random_state=42)
         grid_search = GridSearchCV(estimator=qsvc, param_grid=param_grid, cv=cv, scoring="accuracy")
@@ -150,12 +150,11 @@ def local_qsvm(quantum_kernel, X, y, size = 100, optimize_params = False):
         t2 = time.time()
         print(f"Total time for QSVC training: {t2 - t1:.2f} seconds.")
     
-    # Evaluate on the training set
+    # evaluate
     y_train_pred = qsvc.predict(X_train)
     train_accuracy = accuracy_score(y_train,y_train_pred)
     print(f"Local QSVC Training Accuracy: {train_accuracy:.4f}")
-    
-    # Predict on the test set
+    # predict
     y_pred_qsvc = qsvc.predict(X_test)
     test_accuracy = accuracy_score(y_test, y_pred_qsvc)
     print(f"Local QSVC Test Accuracy: {test_accuracy:.4f}")
@@ -176,7 +175,7 @@ def local_qlr_old(X, y, size = 100):
     print("Training QLR locally")
     train_predictions = [sigmoid(quantum_linear_model(optimal_params, x)) for x in X_train]
     y_pred = [1 if train_predictions[i] >= 0.5 else 0 for i in range(len(train_predictions))]
-    # Print predictions and accuracy
+    # print predictions and accuracy
     print(f"QLR train accuracy: {accuracy_score(y_train, y_pred):.4f}")
     test_predictions = [sigmoid(quantum_linear_model(optimal_params, x)) for x in X_test]
     y_pred = [1 if test_predictions[i] >= 0.5 else 0 for i in range(len(test_predictions))]
