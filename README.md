@@ -1,2 +1,2 @@
 # quantum-machine-learning
-Project within Electrical and Computer Engineering &amp; Institute for Quantum Computing @ UWaterloo
+Project within the department of Electrical and Computer Engineering &amp; the Institute for Quantum Computing @ UWaterloo
